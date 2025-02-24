@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package computation;
+
+service Computation {
+  rpc ProcessTestCase (TestCase) returns (Result) {}
+}
+
+message TestCase {
+  int64 n = 1;
+  repeated int64 array = 2;
+}
+
+message Result {
+  int64 answer = 1;
+}
