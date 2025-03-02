@@ -172,3 +172,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+Multithreading vs Multiprocessing/server/output
+Multithreading vs Multiprocessing/server/resource_usage.png
