@@ -1,13 +1,13 @@
 ============ MULTIPROCESSING (4 Workers) ============
-Complete requests:      100
-Failed requests:        52
-Requests per second:    5.36 [#/sec] (mean)
-Time per request:       1866.967 [ms] (mean)
-Time per request:       186.697 [ms] (mean, across all concurrent requests)
+Complete requests:      1000
+Failed requests:        552
+Requests per second:    4.91 [#/sec] (mean)
+Time per request:       20355.841 [ms] (mean)
+Time per request:       203.558 [ms] (mean, across all concurrent requests)
 
 ============ MULTITHREADING (1 Worker, 4 Threads) ============
-Complete requests:      100
-Failed requests:        55
-Requests per second:    4.99 [#/sec] (mean)
-Time per request:       2005.481 [ms] (mean)
-Time per request:       200.548 [ms] (mean, across all concurrent requests)
+Complete requests:      1000
+Failed requests:        471
+Requests per second:    1.54 [#/sec] (mean)
+Time per request:       64907.644 [ms] (mean)
+Time per request:       649.076 [ms] (mean, across all concurrent requests)
