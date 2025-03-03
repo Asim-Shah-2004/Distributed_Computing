@@ -10,34 +10,33 @@ Server Hostname:        127.0.0.1
 Server Port:            8081
 
 Document Path:          /analyze
-Document Length:        227 bytes
+Document Length:        21 bytes
 
 Concurrency Level:      100
-Time taken for tests:   649.076 seconds
+Time taken for tests:   0.529 seconds
 Complete requests:      1000
-Failed requests:        471
-   (Connect: 0, Receive: 0, Length: 471, Exceptions: 0)
-Total transferred:      379489 bytes
-HTML transferred:       226489 bytes
-Requests per second:    1.54 [#/sec] (mean)
-Time per request:       64907.644 [ms] (mean)
-Time per request:       649.076 [ms] (mean, across all concurrent requests)
-Transfer rate:          0.57 [Kbytes/sec] received
+Failed requests:        0
+Total transferred:      173000 bytes
+HTML transferred:       21000 bytes
+Requests per second:    1891.29 [#/sec] (mean)
+Time per request:       52.874 [ms] (mean)
+Time per request:       0.529 [ms] (mean, across all concurrent requests)
+Transfer rate:          319.52 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
 Connect:        0    0   0.2      0       1
-Processing:   673 61746 11289.5  64678   68460
-Waiting:      672 61737 11288.4  64678   68460
-Total:        673 61747 11289.3  64678   68460
+Processing:     2   50  10.0     51      69
+Waiting:        1   50   9.9     50      68
+Total:          2   50   9.8     51      69
 
 Percentage of the requests served within a certain time (ms)
-  50%  64678
-  66%  65133
-  75%  65476
-  80%  65698
-  90%  66350
-  95%  66787
-  98%  67111
-  99%  67510
- 100%  68460 (longest request)
+  50%     51
+  66%     53
+  75%     55
+  80%     56
+  90%     62
+  95%     65
+  98%     67
+  99%     67
+ 100%     69 (longest request)

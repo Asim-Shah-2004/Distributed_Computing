@@ -6,35 +6,28 @@ echo "     THREADING VS PROCESSING BENCHMARK SUITE"
 echo "====================================================="
 echo ""
 
-# Ensure all scripts are executable
 chmod +x benchmark.sh monitor.sh
 
-# Make sure the results directory exists
 mkdir -p results
 
-# Function to check if required packages are installed
 check_requirements() {
     echo "Checking requirements..."
     
-    # Check for ab (Apache Bench)
     if ! command -v ab &> /dev/null; then
         echo "Apache Bench (ab) not found. Installing apache2-utils..."
         sudo apt-get update && sudo apt-get install -y apache2-utils
     fi
     
-    # Check for htop
     if ! command -v htop &> /dev/null; then
         echo "htop not found. Installing htop..."
         sudo apt-get update && sudo apt-get install -y htop
     fi
     
-    # Check for Python requirements
     pip install -q flask gunicorn numpy psutil
     
     echo "All requirements satisfied."
 }
 
-# Function to run monitoring in a new terminal
 run_monitoring() {
     if command -v gnome-terminal &> /dev/null; then
         gnome-terminal -- ./monitor.sh
