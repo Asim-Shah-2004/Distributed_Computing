@@ -1,0 +1,100 @@
+version: '3'
+
+services:
+  master:
+    build: .
+    container_name: master
+    environment:
+      - NODE_NAME=master
+      - NODE_TYPE=master
+    ports:
+      - "5000:5000"
+    networks:
+      - ntp_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  monocarp:
+    build: .
+    container_name: monocarp
+    environment:
+      - NODE_NAME=monocarp
+      - NODE_TYPE=client
+    ports:
+      - "5001:5000"
+    networks:
+      - ntp_network
+    depends_on:
+      master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  polycarp:
+    build: .
+    container_name: polycarp
+    environment:
+      - NODE_NAME=polycarp
+      - NODE_TYPE=client
+    ports:
+      - "5002:5000"
+    networks:
+      - ntp_network
+    depends_on:
+      master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  pak_chenak:
+    build: .
+    container_name: pak_chenak
+    environment:
+      - NODE_NAME=pak_chenak
+      - NODE_TYPE=client
+    ports:
+      - "5003:5000"
+    networks:
+      - ntp_network
+    depends_on:
+      master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  cli:
+    build: .
+    container_name: cli
+    environment:
+      - NODE_NAME=cli
+    networks:
+      - ntp_network
+    depends_on:
+      master:
+        condition: service_healthy
+      monocarp:
+        condition: service_healthy
+      polycarp:
+        condition: service_healthy
+      pak_chenak:
+        condition: service_healthy
+    entrypoint: ["./cli.py"]
+    stdin_open: true
+    tty: true
+
+networks:
+  ntp_network:
+    driver: bridge
