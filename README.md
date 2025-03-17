@@ -6,6 +6,7 @@ Welcome to the **Distributed Computing Lab** repository! This repository contain
 - Message Passing and RPC
 - Message queues
 - Multiprocessing vs parallel processing
+- Network Time Protocol
 
 ## How to Use
 1. Clone the repository:
