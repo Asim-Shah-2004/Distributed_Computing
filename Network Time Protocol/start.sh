@@ -11,10 +11,6 @@ working to complete their major project. Unfortunately, they've discovered
 their computers are showing different times, causing confusion about when 
 assignments are actually due.
 
-"We have no idea when to submit our work!" Monocarp complained during 
-their emergency video call. "My computer says it's 3:15, but Polycarp's 
-shows 3:22, and Pak Chenak's is somehow 20 minutes behind both of us!"
-
 With the submission deadline approaching and no technical expertise among 
 them, they've reached out to you for help. They need a way to synchronize 
 their clocks to ensure they submit their work on time and avoid penalties.
