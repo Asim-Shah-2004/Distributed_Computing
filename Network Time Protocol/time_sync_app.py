@@ -41,7 +41,7 @@ def format_time(timestamp):
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
 if NODE_TYPE == 'client':
-    initial_offset = random.uniform(-60, 60)
+    initial_offset = random.uniform(-3600, 3600)
     drift_rate = random.uniform(0.9, 1.1)
     clock = SimulatedClock(initial_offset, drift_rate)
     print(f"[{NODE_NAME}] Started with offset: {initial_offset:.6f}s, drift rate: {drift_rate:.6f}")
