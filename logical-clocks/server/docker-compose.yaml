@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  node1:
+    build: .
+    environment:
+      - NODE_ID=node1
+      - PORT=3001
+      - NODE_URLS=http://node2:3002,http://node3:3003,http://node4:3004
+    ports:
+      - "3001:3001"
+    networks:
+      - clock-network
+
+  node2:
+    build: .
+    environment:
+      - NODE_ID=node2
+      - PORT=3002
+      - NODE_URLS=http://node1:3001,http://node3:3003,http://node4:3004
+    ports:
+      - "3002:3002"
+    networks:
+      - clock-network
+
+  node3:
+    build: .
+    environment:
+      - NODE_ID=node3
+      - PORT=3003
+      - NODE_URLS=http://node1:3001,http://node2:3002,http://node4:3004
+    ports:
+      - "3003:3003"
+    networks:
+      - clock-network
+
+  node4:
+    build: .
+    environment:
+      - NODE_ID=node4
+      - PORT=3004
+      - NODE_URLS=http://node1:3001,http://node2:3002,http://node3:3003
+    ports:
+      - "3004:3004"
+    networks:
+      - clock-network
+      
+  dashboard:
+    build: .
+    environment:
+      - NODE_ID=dashboard
+      - PORT=8080
+      - NODE_URLS=http://node1:3001,http://node2:3002,http://node3:3003,http://node4:3004
+      - IS_DASHBOARD=true
+    ports:
+      - "8080:8080"
+    networks:
+      - clock-network
+
+networks:
+  clock-network:
+    driver: bridge
