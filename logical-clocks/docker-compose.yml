@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  node0:
+    build: .
+    command: python node.py --id 0 --nodes 3 --algorithm vector --host-prefix node
+    volumes:
+      - ./logs:/logs
+    networks:
+      - clock_network
+
+  node1:
+    build: .
+    command: python node.py --id 1 --nodes 3 --algorithm vector --host-prefix node
+    volumes:
+      - ./logs:/logs
+    networks:
+      - clock_network
+
+  node2:
+    build: .
+    command: python node.py --id 2 --nodes 3 --algorithm vector --host-prefix node
+    volumes:
+      - ./logs:/logs
+    networks:
+      - clock_network
+
+networks:
+  clock_network:
+    driver: bridge
