@@ -27,7 +27,12 @@ class Node:
         self.event_log = []
         self.running = True
         self.message_count = 0
-        self.max_messages = 20  # Limit the number of messages per node
+        
+        # Global event counter shared across nodes (using file-based counter)
+        self.counter_file = "/logs/event_counter.txt"
+        
+        # Maximum total events across all nodes
+        self.max_total_events = 7
         
         # Setup socket server
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,8 +43,34 @@ class Node:
         print(f"Node {self.node_id} initialized with algorithm: {self.algorithm}")
         print(f"  - Lamport clock: {self.lamport_clock}")
         print(f"  - Vector clock: {self.vector_clock}")
+    
+    def get_total_events(self):
+        # Check global event counter
+        try:
+            if os.path.exists(self.counter_file):
+                with open(self.counter_file, 'r') as f:
+                    return int(f.read().strip() or "0")
+            return 0
+        except Exception:
+            return 0
+    
+    def increment_event_counter(self):
+        # Increment global event counter
+        total = self.get_total_events() + 1
+        try:
+            with open(self.counter_file, 'w') as f:
+                f.write(str(total))
+            return total
+        except Exception as e:
+            print(f"Error updating counter: {e}")
+            return total
         
     def start(self):
+        # Initialize counter file if this is node 0
+        if self.node_id == 0:
+            with open(self.counter_file, 'w') as f:
+                f.write("0")
+        
         # Start server thread to listen for incoming messages
         server_thread = threading.Thread(target=self.listen_for_messages)
         server_thread.daemon = True
@@ -55,7 +86,7 @@ class Node:
         
         # Wait for threads to complete
         try:
-            while self.running and self.message_count < self.max_messages:
+            while self.running and self.get_total_events() < self.max_total_events:
                 time.sleep(1)
             
             # Allow time for final messages to be processed
@@ -71,7 +102,7 @@ class Node:
         print(f"Node {self.node_id} listening on port {self.port}")
         self.server_socket.settimeout(1)  # Set timeout to make it interruptible
         
-        while self.running:
+        while self.running and self.get_total_events() < self.max_total_events:
             try:
                 client_socket, addr = self.server_socket.accept()
                 client_handler = threading.Thread(target=self.handle_client, args=(client_socket,))
@@ -98,6 +129,10 @@ class Node:
             client_socket.close()
     
     def process_message(self, message):
+        # Check if we've reached the event limit
+        if self.get_total_events() >= self.max_total_events:
+            return
+            
         sender_id = message['sender_id']
         event_type = message['event_type']
         
@@ -119,20 +154,26 @@ class Node:
             
             clock_display = f"Vector clock: {self.vector_clock}"
         
+        # Increment global event counter
+        event_number = self.increment_event_counter()
+        
         # Log the received message
         log_entry = {
             'timestamp': time.time(),
             'event': f"RECEIVE from Node {sender_id}",
             'description': f"Received: {event_type}",
-            'clock': current_clock
+            'clock': current_clock,
+            'event_number': event_number
         }
         self.event_log.append(log_entry)
         
         print(f"Node {self.node_id} received message from Node {sender_id}: {event_type}")
         print(f"  - Updated {clock_display}")
+        print(f"  - Global event count: {event_number}/{self.max_total_events}")
     
     def send_message(self, target_node: int, event_type: str):
-        if not self.running or self.message_count >= self.max_messages:
+        # Check if we've reached the event limit
+        if not self.running or self.get_total_events() >= self.max_total_events:
             return
             
         try:
@@ -156,12 +197,16 @@ class Node:
             # Target host details
             target_host, target_port = self.hosts[target_node]
             
+            # Increment global event counter
+            event_number = self.increment_event_counter()
+            
             # Log the send event
             log_entry = {
                 'timestamp': time.time(),
                 'event': f"SEND to Node {target_node}",
                 'description': f"Sent: {event_type}",
-                'clock': clock_value
+                'clock': clock_value,
+                'event_number': event_number
             }
             self.event_log.append(log_entry)
             
@@ -180,6 +225,7 @@ class Node:
                     self.message_count += 1
                     print(f"Node {self.node_id} sent message to Node {target_node}: {event_type}")
                     print(f"  - Current {clock_display}")
+                    print(f"  - Global event count: {event_number}/{self.max_total_events}")
                     break
                 except (socket.error, socket.timeout) as e:
                     retry_count += 1
@@ -196,9 +242,13 @@ class Node:
         """Generate random events (internal and message sends)"""
         event_types = ["DATABASE_UPDATE", "CACHE_REFRESH", "CONFIG_CHANGE", "TRANSACTION"]
         
-        while self.running and self.message_count < self.max_messages:
+        while self.running and self.get_total_events() < self.max_total_events:
             # Randomly choose between internal event or send message
             if random.random() < 0.3:  # 30% chance for internal event
+                # Check again before proceeding
+                if self.get_total_events() >= self.max_total_events:
+                    break
+                    
                 # Internal event
                 event_type = random.choice(event_types)
                 
@@ -212,18 +262,27 @@ class Node:
                     clock_value = self.vector_clock.copy()
                     clock_display = f"Vector clock: {self.vector_clock}"
                 
+                # Increment global event counter
+                event_number = self.increment_event_counter()
+                
                 # Log the internal event
                 log_entry = {
                     'timestamp': time.time(),
                     'event': "INTERNAL",
                     'description': f"Internal event: {event_type}",
-                    'clock': clock_value
+                    'clock': clock_value,
+                    'event_number': event_number
                 }
                 self.event_log.append(log_entry)
                 
                 print(f"Node {self.node_id} internal event: {event_type}")
                 print(f"  - Current {clock_display}")
+                print(f"  - Global event count: {event_number}/{self.max_total_events}")
             else:
+                # Check again before proceeding
+                if self.get_total_events() >= self.max_total_events:
+                    break
+                    
                 # Send message to random node
                 target_node = random.choice([i for i in range(self.total_nodes) if i != self.node_id])
                 event_type = random.choice(event_types)
