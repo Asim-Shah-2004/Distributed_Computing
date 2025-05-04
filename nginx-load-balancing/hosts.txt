@@ -1,0 +1,4 @@
+127.0.0.1 static.example.com
+127.0.0.1 static-iphash.example.com
+127.0.0.1 dynamic.example.com
+127.0.0.1 dynamic-weighted.example.com
