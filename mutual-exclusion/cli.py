@@ -26,9 +26,14 @@ def send_command(node_id, command_type, payload=None):
         
         # Wait for acknowledgment
         data = s.recv(1024)
+        response = data.decode('utf-8')
         s.close()
         
-        return True
+        # Try to parse as JSON if possible
+        try:
+            return json.loads(response)
+        except:
+            return response
     except Exception as e:
         print(f"Error sending command to Node {node_id}: {e}")
         return False
@@ -126,9 +131,47 @@ def main():
                     
             elif cmd == "state":
                 print("Requesting system state...")
-                success = send_command(0, "get_state")
-                if success:
-                    print("State request sent, check node0 logs")
+                # Get algorithm type first
+                algorithm_response = send_command(0, "get_algorithm")
+                
+                if not algorithm_response:
+                    print("Failed to get algorithm information")
+                    continue
+                
+                try:
+                    algorithm = algorithm_response.get('algorithm', 'unknown')
+                    print(f"Current algorithm: {algorithm}")
+                    
+                    if algorithm == "centralized":
+                        # For centralized, we can ask coordinator (node0)
+                        state_response = send_command(0, "get_state")
+                        if state_response:
+                            print(f"Coordinator: Node 0")
+                            if 'queue' in state_response:
+                                print(f"Queue: {state_response['queue']}")
+                            if 'in_cs' in state_response:
+                                print(f"In critical section: Node {state_response['in_cs']}")
+                    elif algorithm == "token_ring":
+                        # For token ring, check all nodes to find the token
+                        print("Checking token location...")
+                        for i in range(NODE_COUNT):
+                            state_response = send_command(i, "get_state")
+                            if state_response and state_response.get('has_token', False):
+                                print(f"Node {i} currently has the token")
+                                break
+                        else:
+                            print("Could not locate the token in any node")
+                        
+                        # Also check which nodes are in CS or waiting
+                        for i in range(NODE_COUNT):
+                            state_response = send_command(i, "get_state")
+                            if state_response:
+                                if state_response.get('in_cs', False):
+                                    print(f"Node {i} is in critical section")
+                                elif state_response.get('waiting', False):
+                                    print(f"Node {i} is waiting for the token")
+                except Exception as e:
+                    print(f"Error processing state: {e}")
                     
             elif cmd == "exit":
                 print("Exiting...")

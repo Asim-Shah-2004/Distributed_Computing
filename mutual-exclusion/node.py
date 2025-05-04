@@ -29,6 +29,7 @@ class Node:
         self.neighbors = {}  # {node_id: (host, port)}
         self.stop_flag = False
         self.message_queue = queue.Queue()
+        self.waiting_for_token = False
         
         # For visualization
         self.queue_state = []
@@ -83,8 +84,34 @@ class Node:
                 self.message_queue.put(message)
                 
                 # Send acknowledgment for certain message types
-                if message.get('type') in ['set_algorithm', 'request_cs', 'release_cs', 'get_state']:
-                    response = {'status': 'ok'}
+                if message.get('type') in ['set_algorithm', 'request_cs', 'release_cs', 'get_state', 'request_command', 'release_command', 'get_algorithm']:
+                    response = {}
+                    
+                    # For state requests, include the current state
+                    if message.get('type') == 'get_state':
+                        if self.algorithm == 'centralized':
+                            if self.is_coordinator:
+                                response = {
+                                    'queue': list(self.request_queue),
+                                    'in_cs': self.token_holder
+                                }
+                            else:
+                                response = {
+                                    'in_cs': self.in_critical_section
+                                }
+                        elif self.algorithm == 'token_ring':
+                            response = {
+                                'has_token': self.has_token,
+                                'in_cs': self.in_critical_section,
+                                'waiting': self.waiting_for_token
+                            }
+                    elif message.get('type') == 'get_algorithm':
+                        response = {
+                            'algorithm': self.algorithm
+                        }
+                    else:
+                        response = {'status': 'ok'}
+                        
                     client_socket.send(json.dumps(response).encode('utf-8'))
                     
         except Exception as e:
@@ -220,13 +247,18 @@ class Node:
         
     def handle_token(self, message):
         """Handle token passing in token ring algorithm"""
-        print(f"Node {self.node_id} received the token")
+        sender_id = message.get('sender_id')
+        print(f"Node {self.node_id} received the token from Node {sender_id}")
         self.has_token = True
+        
+        # Update global token holder state - important for state requests
         self.token_holder = self.node_id
         
         # If we want to enter CS, use the token
-        if self.in_critical_section:
+        if self.in_critical_section or self.waiting_for_token:
             print(f"Node {self.node_id} is using the token to enter CS")
+            self.in_critical_section = True
+            self.waiting_for_token = False
             time.sleep(1)  # Simulate CS access
             
             # We're done with CS
@@ -248,7 +280,7 @@ class Node:
         })
         
         self.has_token = False
-        self.token_holder = next_node
+        self.token_holder = next_node  # Update token holder reference before passing
         
     def send_message(self, target_node_id, message):
         """Send a message to a specific node"""
@@ -318,9 +350,17 @@ class Node:
             })
             
         elif self.algorithm == 'token_ring':
-            # In token ring, we just mark that we want to enter CS when we get the token
+            # In token ring, we mark that we want to enter CS when we get the token
             print(f"Node {self.node_id} wants to enter critical section when token arrives")
-            self.in_critical_section = True
+            if self.has_token:
+                self.in_critical_section = True
+                print(f"Node {self.node_id} already has the token and enters CS")
+                time.sleep(1)  # Simulate CS access
+                self.in_critical_section = False
+                self.pass_token()
+            else:
+                self.waiting_for_token = True
+                self.in_critical_section = False
             
     def release_critical_section(self):
         """Release the critical section"""
@@ -340,10 +380,15 @@ class Node:
             # In token ring, we just mark that we don't want to enter CS
             print(f"Node {self.node_id} no longer wants to enter critical section")
             self.in_critical_section = False
+            self.waiting_for_token = False
             
     def start_token_ring(self):
         """Initialize token ring algorithm"""
         print(f"Starting token ring algorithm")
+        
+        # Reset all token-related state
+        self.in_critical_section = False
+        self.waiting_for_token = False
         
         if self.node_id == 0:  # Node 0 starts with the token
             self.has_token = True
@@ -354,7 +399,7 @@ class Node:
             self.pass_token()
         else:
             self.has_token = False
-            self.token_holder = 0
+            self.token_holder = 0  # Initialize token holder to Node 0
             
     def set_algorithm(self, algorithm):
         """Set the mutual exclusion algorithm to use"""
@@ -391,7 +436,7 @@ class Node:
         elif self.algorithm == 'token_ring':
             output = []
             output.append(f"Token holder: Node {self.token_holder}")
-            output.append(f"My state: {'Want CS' if self.in_critical_section else 'Not wanting CS'}")
+            output.append(f"My state: {('In CS' if self.in_critical_section else ('Waiting for token' if self.waiting_for_token else 'Idle'))}")
             
             # Create ring visualization
             ring = ["┌"] + ["───"] * NODE_COUNT + ["┐"]
