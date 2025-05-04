@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "8080:8080"  # For NGINX status page
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app1
+      - app2
+      - app3
+    networks:
+      - app-network
+
+  app1:
+    build:
+      context: ./app
+    environment:
+      - SERVER_NAME=Server1
+    networks:
+      - app-network
+
+  app2:
+    build:
+      context: ./app
+    environment:
+      - SERVER_NAME=Server2
+    networks:
+      - app-network
+
+  app3:
+    build:
+      context: ./app
+    environment:
+      - SERVER_NAME=Server3
+    networks:
+      - app-network
+
+networks:
+  app-network:
