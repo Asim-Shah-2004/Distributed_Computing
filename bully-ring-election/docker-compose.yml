@@ -1,0 +1,97 @@
+version: '3'
+
+services:
+  node-0:
+    build: .
+    container_name: node-0
+    hostname: node-0
+    networks:
+      - election-network
+    volumes:
+      - ./app:/app:rw
+    user: "1000:1000"  # Use UID:GID that matches your host user
+    tty: true
+    ports:
+      - "5000:5000/udp"
+
+  node-1:
+    build: .
+    container_name: node-1
+    hostname: node-1
+    networks:
+      - election-network
+    volumes:
+      - ./app:/app:rw
+    user: "1000:1000"
+    tty: true
+    ports:
+      - "5001:5001/udp"
+
+  node-2:
+    build: .
+    container_name: node-2
+    hostname: node-2
+    networks:
+      - election-network
+    volumes:
+      - ./app:/app:rw
+    user: "1000:1000"
+    tty: true
+    ports:
+      - "5002:5002/udp"
+
+  node-3:
+    build: .
+    container_name: node-3
+    hostname: node-3
+    networks:
+      - election-network
+    volumes:
+      - ./app:/app:rw
+    user: "1000:1000"
+    tty: true
+    ports:
+      - "5003:5003/udp"
+
+  node-4:
+    build: .
+    container_name: node-4
+    hostname: node-4
+    networks:
+      - election-network
+    volumes:
+      - ./app:/app:rw
+    user: "1000:1000"
+    tty: true
+    ports:
+      - "5004:5004/udp"
+
+  node-5:
+    build: .
+    container_name: node-5
+    hostname: node-5
+    networks:
+      - election-network
+    volumes:
+      - ./app:/app:rw
+    user: "1000:1000"
+    tty: true
+    ports:
+      - "5005:5005/udp"
+
+  node-6:
+    build: .
+    container_name: node-6
+    hostname: node-6
+    networks:
+      - election-network
+    volumes:
+      - ./app:/app:rw
+    user: "1000:1000"
+    tty: true
+    ports:
+      - "5006:5006/udp"
+
+networks:
+  election-network:
+    driver: bridge

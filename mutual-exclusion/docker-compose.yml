@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  node0:
+    build: .
+    container_name: node0
+    networks:
+      - mutual_exclusion_network
+    command: python node.py 0
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  node1:
+    build: .
+    container_name: node1
+    networks:
+      - mutual_exclusion_network
+    command: python node.py 1
+    depends_on:
+      - node0
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  node2:
+    build: .
+    container_name: node2
+    networks:
+      - mutual_exclusion_network
+    command: python node.py 2
+    depends_on:
+      - node0
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  node3:
+    build: .
+    container_name: node3
+    networks:
+      - mutual_exclusion_network
+    command: python node.py 3
+    depends_on:
+      - node0
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  node4:
+    build: .
+    container_name: node4
+    networks:
+      - mutual_exclusion_network
+    command: python node.py 4
+    depends_on:
+      - node0
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    container_name: cli
+    networks:
+      - mutual_exclusion_network
+    stdin_open: true
+    tty: true
+    depends_on:
+      - node0
+      - node1
+      - node2
+      - node3
+      - node4
+
+networks:
+  mutual_exclusion_network:
+    driver: bridge
