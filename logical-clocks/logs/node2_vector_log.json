@@ -1,24 +1,13 @@
 [
   {
-    "timestamp": 1745814577.5347767,
-    "event": "RECEIVE from Node 1",
-    "description": "Received: DATABASE_UPDATE",
+    "timestamp": 1746398561.6273022,
+    "event": "SEND to Node 1",
+    "description": "Sent: DATABASE_UPDATE",
     "clock": [
-      1,
-      2,
+      0,
+      0,
       1
     ],
-    "event_number": 4
-  },
-  {
-    "timestamp": 1745814577.5945623,
-    "event": "SEND to Node 0",
-    "description": "Sent: CACHE_REFRESH",
-    "clock": [
-      1,
-      2,
-      2
-    ],
-    "event_number": 5
+    "event_number": 1
   }
 ]

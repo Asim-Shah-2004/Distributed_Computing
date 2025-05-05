@@ -1,0 +1,17 @@
+ELECTION REPORT - RING ALGORITHM
+Number of nodes: 6
+Coordinator elected: Node 5
+Total messages sent: 22
+Election duration: Not available
+
+Message types:
+  - TOKEN: 12
+  - COORDINATOR: 10
+
+Messages per node:
+  - Node 0: 7
+  - Node 1: 3
+  - Node 2: 3
+  - Node 3: 3
+  - Node 4: 3
+  - Node 5: 3

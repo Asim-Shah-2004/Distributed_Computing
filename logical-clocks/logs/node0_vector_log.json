@@ -1,35 +1,24 @@
 [
   {
-    "timestamp": 1745814577.5059822,
+    "timestamp": 1746398561.7282426,
     "event": "SEND to Node 1",
-    "description": "Sent: DATABASE_UPDATE",
+    "description": "Sent: CACHE_REFRESH",
     "clock": [
       1,
       0,
       0
     ],
-    "event_number": 1
+    "event_number": 3
   },
   {
-    "timestamp": 1745814577.5956807,
-    "event": "RECEIVE from Node 2",
-    "description": "Received: CACHE_REFRESH",
+    "timestamp": 1746398561.7331324,
+    "event": "RECEIVE from Node 1",
+    "description": "Received: TRANSACTION",
     "clock": [
       2,
-      2,
-      2
+      3,
+      1
     ],
     "event_number": 6
-  },
-  {
-    "timestamp": 1745814579.4814742,
-    "event": "INTERNAL",
-    "description": "Internal event: CACHE_REFRESH",
-    "clock": [
-      3,
-      2,
-      2
-    ],
-    "event_number": 7
   }
 ]

@@ -1,96 +1,76 @@
 version: '3'
 
 services:
-  node-0:
+  node0:
+    container_name: node0
     build: .
-    container_name: node-0
-    hostname: node-0
+    command: python election_algorithms.py --id 0 --nodes 6 --algorithm ${ALGORITHM:-bully} --initiate
+    volumes:
+      - ./logs:/logs
     networks:
       - election-network
-    volumes:
-      - ./app:/app:rw
-    user: "1000:1000"  # Use UID:GID that matches your host user
-    tty: true
-    ports:
-      - "5000:5000/udp"
 
-  node-1:
+  node1:
+    container_name: node1
     build: .
-    container_name: node-1
-    hostname: node-1
+    command: python election_algorithms.py --id 1 --nodes 6 --algorithm ${ALGORITHM:-bully}
+    volumes:
+      - ./logs:/logs
     networks:
       - election-network
-    volumes:
-      - ./app:/app:rw
-    user: "1000:1000"
-    tty: true
-    ports:
-      - "5001:5001/udp"
 
-  node-2:
+  node2:
+    container_name: node2
     build: .
-    container_name: node-2
-    hostname: node-2
+    command: python election_algorithms.py --id 2 --nodes 6 --algorithm ${ALGORITHM:-bully}
+    volumes:
+      - ./logs:/logs
     networks:
       - election-network
-    volumes:
-      - ./app:/app:rw
-    user: "1000:1000"
-    tty: true
-    ports:
-      - "5002:5002/udp"
 
-  node-3:
+  node3:
+    container_name: node3
     build: .
-    container_name: node-3
-    hostname: node-3
+    command: python election_algorithms.py --id 3 --nodes 6 --algorithm ${ALGORITHM:-bully}
+    volumes:
+      - ./logs:/logs
     networks:
       - election-network
-    volumes:
-      - ./app:/app:rw
-    user: "1000:1000"
-    tty: true
-    ports:
-      - "5003:5003/udp"
 
-  node-4:
+  node4:
+    container_name: node4
     build: .
-    container_name: node-4
-    hostname: node-4
+    command: python election_algorithms.py --id 4 --nodes 6 --algorithm ${ALGORITHM:-bully}
+    volumes:
+      - ./logs:/logs
     networks:
       - election-network
-    volumes:
-      - ./app:/app:rw
-    user: "1000:1000"
-    tty: true
-    ports:
-      - "5004:5004/udp"
 
-  node-5:
+  node5:
+    container_name: node5
     build: .
-    container_name: node-5
-    hostname: node-5
+    command: python election_algorithms.py --id 5 --nodes 6 --algorithm ${ALGORITHM:-bully}
+    volumes:
+      - ./logs:/logs
     networks:
       - election-network
-    volumes:
-      - ./app:/app:rw
-    user: "1000:1000"
-    tty: true
-    ports:
-      - "5005:5005/udp"
 
-  node-6:
+  analyzer:
+    container_name: analyzer
     build: .
-    container_name: node-6
-    hostname: node-6
+    volumes:
+      - ./logs:/logs
+      - ./analyze_results.py:/app/analyze_results.py
+    command: /bin/bash -c "sleep 20 && python /app/analyze_results.py ${ALGORITHM:-bully}"
     networks:
       - election-network
-    volumes:
-      - ./app:/app:rw
-    user: "1000:1000"
-    tty: true
-    ports:
-      - "5006:5006/udp"
+    depends_on:
+      - node0
+      - node1
+      - node2
+      - node3
+      - node4
+      - node5
 
 networks:
   election-network:
