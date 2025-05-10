@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  redis-cache:
+    image: redis:6.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  node-strong:
+    build: .
+    container_name: node-strong
+    environment:
+      - NODE_ID=node1
+      - CONSISTENCY_MODEL=STRONG
+      - PORT=5001
+      - LOG_LEVEL=INFO
+    ports:
+      - "5001:5001"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: ["python", "distributed_node.py"]
+
+  node-eventual:
+    build: .
+    container_name: node-eventual
+    environment:
+      - NODE_ID=node2
+      - CONSISTENCY_MODEL=EVENTUAL
+      - PORT=5002
+      - LOG_LEVEL=INFO
+    ports:
+      - "5002:5002"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: ["python", "distributed_node.py"]
+
+  node-causal:
+    build: .
+    container_name: node-causal
+    environment:
+      - NODE_ID=node3
+      - CONSISTENCY_MODEL=CAUSAL
+      - PORT=5003
+      - LOG_LEVEL=INFO
+    ports:
+      - "5003:5003"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: ["python", "distributed_node.py"]
+
+  node-read-writes:
+    build: .
+    container_name: node-read-writes
+    environment:
+      - NODE_ID=node4
+      - CONSISTENCY_MODEL=READ_YOUR_WRITES
+      - PORT=5004
+      - LOG_LEVEL=INFO
+    ports:
+      - "5004:5004"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: ["python", "distributed_node.py"]
+      
+  test-client:
+    build: .
+    container_name: test-client
+    environment:
+      - NODE_ID=test-client
+      - DOCKER_MODE=true
+      - LOG_LEVEL=INFO
+    depends_on:
+      - node-strong
+      - node-eventual
+      - node-causal
+      - node-read-writes
+    volumes:
+      - ./:/app
+      - ./logs:/app/logs
+    command: sh -c "sleep 15 && python test_client.py"
+    tty: true
+    stdin_open: true 
