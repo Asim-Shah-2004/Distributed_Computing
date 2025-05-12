@@ -15,7 +15,6 @@ Welcome to the **Distributed Computing Lab** repository! This comprehensive coll
   - [Leader Election Algorithms](#leader-election-algorithms)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Introduction
@@ -381,18 +380,6 @@ Each experiment directory contains detailed instructions and scripts for running
 # Analyze results
 python analyze_results.py
 ```
-
-## Contributing
-
-Contributions are enthusiastically welcomed! To contribute:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please ensure your code follows the project's coding standards and includes appropriate tests.
 
 ## License
 
