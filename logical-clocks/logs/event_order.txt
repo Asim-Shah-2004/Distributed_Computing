@@ -1,56 +1,56 @@
 VECTOR CLOCK EVENT ORDER
 ========================
 
-Event 1: Node 2 - SEND to Node 1
+Event 1: Node 2 - SEND to Node 0
   Vector Clock: [0, 0, 1]
-  Description: Sent: DATABASE_UPDATE
-
-Event 2: Node 1 - RECEIVE from Node 2
-  Vector Clock: [0, 1, 1]
-  Description: Received: DATABASE_UPDATE
-
-Event 3: Node 0 - SEND to Node 1
-  Vector Clock: [1, 0, 0]
   Description: Sent: CACHE_REFRESH
 
-Event 4: Node 1 - RECEIVE from Node 0
-  Vector Clock: [1, 2, 1]
+Event 2: Node 0 - RECEIVE from Node 2
+  Vector Clock: [1, 0, 1]
   Description: Received: CACHE_REFRESH
 
-Event 5: Node 1 - SEND to Node 0
-  Vector Clock: [1, 3, 1]
-  Description: Sent: TRANSACTION
+Event 3: Node 0 - SEND to Node 1
+  Vector Clock: [2, 0, 1]
+  Description: Sent: DATABASE_UPDATE
 
-Event 6: Node 0 - RECEIVE from Node 1
-  Vector Clock: [2, 3, 1]
-  Description: Received: TRANSACTION
+Event 4: Node 1 - RECEIVE from Node 0
+  Vector Clock: [2, 1, 1]
+  Description: Received: DATABASE_UPDATE
 
-Event 7: Node 1 - INTERNAL
-  Vector Clock: [1, 4, 1]
-  Description: Internal event: TRANSACTION
+Event 5: Node 1 - SEND to Node 2
+  Vector Clock: [2, 2, 1]
+  Description: Sent: CONFIG_CHANGE
+
+Event 6: Node 2 - RECEIVE from Node 1
+  Vector Clock: [2, 2, 2]
+  Description: Received: CONFIG_CHANGE
+
+Event 7: Node 2 - INTERNAL
+  Vector Clock: [2, 2, 3]
+  Description: Internal event: DATABASE_UPDATE
 
 
 CAUSAL RELATIONSHIPS:
 ====================
 
-Event 1 (Node 2 - SEND to Node 1) happened before Event 2 (Node 1 - RECEIVE from Node 2)
-Event 1 (Node 2 - SEND to Node 1) is concurrent with Event 3 (Node 0 - SEND to Node 1)
-Event 1 (Node 2 - SEND to Node 1) happened before Event 4 (Node 1 - RECEIVE from Node 0)
-Event 1 (Node 2 - SEND to Node 1) happened before Event 5 (Node 1 - SEND to Node 0)
-Event 1 (Node 2 - SEND to Node 1) happened before Event 6 (Node 0 - RECEIVE from Node 1)
-Event 1 (Node 2 - SEND to Node 1) happened before Event 7 (Node 1 - INTERNAL)
-Event 2 (Node 1 - RECEIVE from Node 2) is concurrent with Event 3 (Node 0 - SEND to Node 1)
-Event 2 (Node 1 - RECEIVE from Node 2) happened before Event 4 (Node 1 - RECEIVE from Node 0)
-Event 2 (Node 1 - RECEIVE from Node 2) happened before Event 5 (Node 1 - SEND to Node 0)
-Event 2 (Node 1 - RECEIVE from Node 2) happened before Event 6 (Node 0 - RECEIVE from Node 1)
-Event 2 (Node 1 - RECEIVE from Node 2) happened before Event 7 (Node 1 - INTERNAL)
+Event 1 (Node 2 - SEND to Node 0) happened before Event 2 (Node 0 - RECEIVE from Node 2)
+Event 1 (Node 2 - SEND to Node 0) happened before Event 3 (Node 0 - SEND to Node 1)
+Event 1 (Node 2 - SEND to Node 0) happened before Event 4 (Node 1 - RECEIVE from Node 0)
+Event 1 (Node 2 - SEND to Node 0) happened before Event 5 (Node 1 - SEND to Node 2)
+Event 1 (Node 2 - SEND to Node 0) happened before Event 6 (Node 2 - RECEIVE from Node 1)
+Event 1 (Node 2 - SEND to Node 0) happened before Event 7 (Node 2 - INTERNAL)
+Event 2 (Node 0 - RECEIVE from Node 2) happened before Event 3 (Node 0 - SEND to Node 1)
+Event 2 (Node 0 - RECEIVE from Node 2) happened before Event 4 (Node 1 - RECEIVE from Node 0)
+Event 2 (Node 0 - RECEIVE from Node 2) happened before Event 5 (Node 1 - SEND to Node 2)
+Event 2 (Node 0 - RECEIVE from Node 2) happened before Event 6 (Node 2 - RECEIVE from Node 1)
+Event 2 (Node 0 - RECEIVE from Node 2) happened before Event 7 (Node 2 - INTERNAL)
 Event 3 (Node 0 - SEND to Node 1) happened before Event 4 (Node 1 - RECEIVE from Node 0)
-Event 3 (Node 0 - SEND to Node 1) happened before Event 5 (Node 1 - SEND to Node 0)
-Event 3 (Node 0 - SEND to Node 1) happened before Event 6 (Node 0 - RECEIVE from Node 1)
-Event 3 (Node 0 - SEND to Node 1) happened before Event 7 (Node 1 - INTERNAL)
-Event 4 (Node 1 - RECEIVE from Node 0) happened before Event 5 (Node 1 - SEND to Node 0)
-Event 4 (Node 1 - RECEIVE from Node 0) happened before Event 6 (Node 0 - RECEIVE from Node 1)
-Event 4 (Node 1 - RECEIVE from Node 0) happened before Event 7 (Node 1 - INTERNAL)
-Event 5 (Node 1 - SEND to Node 0) happened before Event 6 (Node 0 - RECEIVE from Node 1)
-Event 5 (Node 1 - SEND to Node 0) happened before Event 7 (Node 1 - INTERNAL)
-Event 6 (Node 0 - RECEIVE from Node 1) is concurrent with Event 7 (Node 1 - INTERNAL)
+Event 3 (Node 0 - SEND to Node 1) happened before Event 5 (Node 1 - SEND to Node 2)
+Event 3 (Node 0 - SEND to Node 1) happened before Event 6 (Node 2 - RECEIVE from Node 1)
+Event 3 (Node 0 - SEND to Node 1) happened before Event 7 (Node 2 - INTERNAL)
+Event 4 (Node 1 - RECEIVE from Node 0) happened before Event 5 (Node 1 - SEND to Node 2)
+Event 4 (Node 1 - RECEIVE from Node 0) happened before Event 6 (Node 2 - RECEIVE from Node 1)
+Event 4 (Node 1 - RECEIVE from Node 0) happened before Event 7 (Node 2 - INTERNAL)
+Event 5 (Node 1 - SEND to Node 2) happened before Event 6 (Node 2 - RECEIVE from Node 1)
+Event 5 (Node 1 - SEND to Node 2) happened before Event 7 (Node 2 - INTERNAL)
+Event 6 (Node 2 - RECEIVE from Node 1) happened before Event 7 (Node 2 - INTERNAL)
