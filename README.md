@@ -13,6 +13,7 @@ Welcome to the **Distributed Computing Lab** repository! This comprehensive coll
   - [Mutual Exclusion](#mutual-exclusion)
   - [Load Balancing](#load-balancing)
   - [Leader Election Algorithms](#leader-election-algorithms)
+  - [CAP Theorem](#cap-theorem)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [License](#license)
@@ -327,6 +328,44 @@ graph TD
 - Election convergence time: 3-5 heartbeat intervals
 - Message complexity: Varies from O(N) to O(N²) based on algorithm
 - Fault tolerance: Handles up to (N-1)/2 simultaneous failures (Paxos/Raft)
+
+### CAP Theorem
+
+Implementation and analysis of distributed systems under the constraints of the CAP Theorem, which states that in a distributed data store, it's impossible to simultaneously provide more than two out of the following three guarantees:
+
+```mermaid
+graph TD
+    subgraph "CAP Triangle"
+    C[Consistency<br>All nodes see same data] --- A[Availability<br>Every request receives response]
+    A --- P[Partition Tolerance<br>System continues despite network failures]
+    P --- C
+    end
+    
+    subgraph "Common Trade-offs"
+    CP[CP Systems<br>e.g., MongoDB] -->|"Strong Consistency<br>Lower Availability"| C
+    AP[AP Systems<br>e.g., Cassandra] -->|"High Availability<br>Eventual Consistency"| A
+    CA[CA Systems<br>e.g., Traditional RDBMS] -->|"No Partition Tolerance"| P
+    end
+```
+
+**Implementation Details:**
+- **CP Systems**: Strong consistency with potential availability trade-offs
+  - Two-phase commit protocol
+  - Quorum-based consistency
+  - Synchronous replication
+- **AP Systems**: High availability with eventual consistency
+  - Eventual consistency models
+  - Conflict resolution strategies
+  - Asynchronous replication
+- **CA Systems**: Traditional systems with no partition tolerance
+  - Single-node databases
+  - Master-slave replication
+  - ACID transactions
+
+**Key Features:**
+- Real-time consistency monitoring
+- Network partition simulation
+- Availability testing under various failure scenarios
 
 ## Requirements
 

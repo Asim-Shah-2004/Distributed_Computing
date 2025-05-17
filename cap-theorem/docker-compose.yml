@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # Redis cache for node coordination and discovery
+  redis-cache:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Strong consistency node (CP system)
+  node-strong:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ID=node1
+      - CONSISTENCY_MODEL=STRONG
+      - PORT=5001
+      - DOCKER_MODE=true
+    ports:
+      - "5001:5001"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+
+  # Eventual consistency node (AP system)
+  node-eventual:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ID=node2
+      - CONSISTENCY_MODEL=EVENTUAL
+      - PORT=5002
+      - DOCKER_MODE=true
+    ports:
+      - "5002:5002"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+
+  # Causal consistency node
+  node-causal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ID=node3
+      - CONSISTENCY_MODEL=CAUSAL
+      - PORT=5003
+      - DOCKER_MODE=true
+    ports:
+      - "5003:5003"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+
+  # Read-your-writes consistency node
+  node-read-writes:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ID=node4
+      - CONSISTENCY_MODEL=READ_YOUR_WRITES
+      - PORT=5004
+      - DOCKER_MODE=true
+    ports:
+      - "5004:5004"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+
+  # Tester client to verify consistency models
+  tester:
+    build:
+      context: .
+      dockerfile: Dockerfile.tester
+    environment:
+      - DOCKER_MODE=true
+    depends_on:
+      - node-strong
+      - node-eventual
+      - node-causal
+      - node-read-writes
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  redis-data: 

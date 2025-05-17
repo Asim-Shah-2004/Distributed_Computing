@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the tester client code
+COPY tester_client.py .
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Run the tester client
+CMD ["python", "tester_client.py"] 
